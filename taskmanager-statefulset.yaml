@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: flink-taskmanager
+spec:
+  serviceName: taskmanager-hl
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flink
+      component: taskmanager
+  template:
+    metadata:
+      labels:
+        app: flink
+        component: taskmanager
+    spec:
+      containers:
+      - name: taskmanager
+        image: flink:1.15-pv
+        env:
+          - name: ENABLE_BUILT_IN_PLUGINS
+            value: "flink-s3-fs-hadoop-1.15-SNAPSHOT.jar"
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        args: ["taskmanager", "-Dtaskmanager.resource-id=$(POD_IP)"]
+        ports:
+        - containerPort: 6122
+          name: rpc
+        - containerPort: 6125
+          name: query-state
+        - containerPort: 6121
+          name: metrics
+        livenessProbe:
+          tcpSocket:
+            port: 6122
+          initialDelaySeconds: 30
+          periodSeconds: 60
+        # securityContext:
+        #   runAsUser: 9999  # refers to user _flink_ from official flink image, change if necessary
+        volumeMounts:
+        - name: flink-config-volume
+          mountPath: /opt/flink/conf/
+        - name: ha-storage
+          mountPath: /ha-storage
+        - name: pv
+          mountPath: /pv
+      serviceAccountName: flink-service-account # Service account which has the permissions to create, edit, delete ConfigMaps
+      volumes:
+      - name: flink-config-volume
+        configMap:
+          name: flink-config
+          items:
+          - key: flink-conf.yaml
+            path: flink-conf.yaml
+          - key: log4j-console.properties
+            path: log4j-console.properties
+      - name: ha-storage
+        hostPath:
+          path: /home/docker/flink
+  volumeClaimTemplates:
+  - metadata:
+      name: pv
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

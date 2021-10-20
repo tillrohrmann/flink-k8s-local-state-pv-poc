@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: jobmanager
-        image: flink:1.15-pv
+        image: tillrohrmann/flink:1.15-pv-gs
         args: ["jobmanager"]
         env:
           - name: POD_IP
@@ -41,8 +41,8 @@ spec:
         volumeMounts:
         - name: flink-config-volume
           mountPath: /opt/flink/conf
-        - name: ha-storage
-          mountPath: /ha-storage
+        # - name: ha-storage
+        #   mountPath: /ha-storage
         # securityContext:
         #   runAsUser: 9999  # refers to user _flink_ from official flink image, change if necessary
       serviceAccountName: flink-service-account # Service account which has the permissions to create, edit, delete ConfigMaps
@@ -55,6 +55,6 @@ spec:
             path: flink-conf.yaml
           - key: log4j-console.properties
             path: log4j-console.properties
-      - name: ha-storage
-        hostPath:
-          path: /home/docker/flink
+      # - name: ha-storage
+      #   hostPath:
+      #     path: /home/docker/flink

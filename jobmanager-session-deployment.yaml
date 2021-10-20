@@ -23,8 +23,8 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-          - name: ENABLE_BUILT_IN_PLUGINS
-            value: "flink-s3-fs-hadoop-1.15-SNAPSHOT.jar"
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcp/sa_credentials.json
         args: ["jobmanager"]
         ports:
         - containerPort: 6123
@@ -41,6 +41,9 @@ spec:
         volumeMounts:
         - name: flink-config-volume
           mountPath: /opt/flink/conf
+        - name: service-account-credentials-volume
+          mountPath: /etc/gcp
+          readOnly: true
         # - name: ha-storage
         #   mountPath: /ha-storage
         # securityContext:
@@ -55,6 +58,12 @@ spec:
             path: flink-conf.yaml
           - key: log4j-console.properties
             path: log4j-console.properties
+      - name: service-account-credentials-volume
+        secret:
+          secretName: gcs-service-account-credentials
+          items:
+          - key: sa_json
+            path: sa_credentials.json
       # - name: ha-storage
       #   hostPath:
       #     path: /home/docker/flink

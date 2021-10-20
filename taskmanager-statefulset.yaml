@@ -19,8 +19,8 @@ spec:
       - name: taskmanager
         image: tillrohrmann/flink:1.15-pv-gs
         env:
-          - name: ENABLE_BUILT_IN_PLUGINS
-            value: "flink-s3-fs-hadoop-1.15-SNAPSHOT.jar"
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/gcp/sa_credentials.json
           - name: POD_IP
             valueFrom:
               fieldRef:
@@ -47,6 +47,9 @@ spec:
         #   mountPath: /ha-storage
         - name: pv
           mountPath: /pv
+        - name: service-account-credentials-volume
+          mountPath: /etc/gcp
+          readOnly: true
       serviceAccountName: flink-service-account # Service account which has the permissions to create, edit, delete ConfigMaps
       volumes:
       - name: flink-config-volume
@@ -57,6 +60,12 @@ spec:
             path: flink-conf.yaml
           - key: log4j-console.properties
             path: log4j-console.properties
+      - name: service-account-credentials-volume
+        secret:
+          secretName: gcs-service-account-credentials
+          items:
+          - key: sa_json
+            path: sa_credentials.json
       # - name: ha-storage
       #   hostPath:
       #     path: /home/docker/flink

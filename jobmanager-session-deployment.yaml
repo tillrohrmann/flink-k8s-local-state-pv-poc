@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: jobmanager
-        image: tillrohrmann/flink:1.15-pv-gs
+        image: tillrohrmann/flink-pv-poc:latest
         args: ["jobmanager"]
         env:
           - name: POD_IP

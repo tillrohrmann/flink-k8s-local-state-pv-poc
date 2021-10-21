@@ -13,7 +13,7 @@ data:
     taskmanager.rpc.port: 6122
     queryable-state.proxy.ports: 6125
     jobmanager.memory.process.size: 2048m
-    taskmanager.memory.process.size: 2048m
+    taskmanager.memory.process.size: 4096m
     parallelism.default: 2
     kubernetes.cluster-id: foobar
     restart-strategy: fixed-delay
@@ -27,6 +27,7 @@ data:
     state.checkpoints.dir: gs://till/checkpoints
     taskmanager.state.local.root-dirs: /pv/localState
     state.backend.rocksdb.localdir: /pv/rocksdb
+    heartbeat.interval: 3000
   log4j-console.properties: |+
     # This affects logging for both user code and Flink
     rootLogger.level = INFO

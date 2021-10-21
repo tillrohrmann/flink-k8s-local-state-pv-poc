@@ -4,7 +4,7 @@ metadata:
   name: flink-taskmanager
 spec:
   serviceName: taskmanager-hl
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: flink
@@ -19,7 +19,7 @@ spec:
         fsGroup: 9999
       containers:
       - name: taskmanager
-        image: tillrohrmann/flink:1.15-pv-gs
+        image: tillrohrmann/flink-pv-poc:latest
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /etc/gcp/sa_credentials.json
@@ -56,6 +56,9 @@ spec:
         - name: service-account-credentials-volume
           mountPath: /etc/gcp
           readOnly: true
+        resources:
+          limits:
+            memory: "4096Mi"
       serviceAccountName: flink-service-account # Service account which has the permissions to create, edit, delete ConfigMaps
       volumes:
       - name: flink-config-volume
@@ -82,4 +85,5 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 1Gi
+          storage: 10Gi
+      storageClassName: premium-rwo

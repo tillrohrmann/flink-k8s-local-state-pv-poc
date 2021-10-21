@@ -12,8 +12,8 @@ data:
     jobmanager.rpc.port: 6123
     taskmanager.rpc.port: 6122
     queryable-state.proxy.ports: 6125
-    jobmanager.memory.process.size: 1024m
-    taskmanager.memory.process.size: 1024m
+    jobmanager.memory.process.size: 2048m
+    taskmanager.memory.process.size: 2048m
     parallelism.default: 2
     kubernetes.cluster-id: foobar
     restart-strategy: fixed-delay
@@ -22,17 +22,11 @@ data:
     state.checkpoint-storage: filesystem
     state.storage.fs.memory-threshold: 5kb
     state.backend.local-recovery: true
-    # state.backend.persistent-volume-support: true
+    state.backend.persistent-volume-support: true
     state.backend.incremental: true
     state.checkpoints.dir: gs://till/checkpoints
-    # taskmanager.state.local.root-dirs: /pv/localState
-    # state.backend.rocksdb.localdir: /pv/rocksdb
-    # s3.path.style.access: true
-    # minio settings
-    # env.java.opts: -Dcom.amazonaws.sdk.disableCertChecking
-    # s3.endpoint: minio.default
-    # s3.access-key: minio
-    # s3.secret-key: minio123
+    taskmanager.state.local.root-dirs: /pv/localState
+    state.backend.rocksdb.localdir: /pv/rocksdb
   log4j-console.properties: |+
     # This affects logging for both user code and Flink
     rootLogger.level = INFO
@@ -54,12 +48,12 @@ data:
     logger.hadoop.level = INFO
     logger.zookeeper.name = org.apache.zookeeper
     logger.zookeeper.level = INFO
-    logger.state.name = org.apache.flink.runtime.state
-    logger.state.level = DEBUG
-    logger.rocksdbcontrib.name = org.apache.flink.contrib.streaming.state.restore
-    logger.rocksdbcontrib.level = DEBUG
-    logger.jobmaster.name = org.apache.flink.runtime.jobmaster.JobMaster
-    logger.jobmaster.level = DEBUG
+    # logger.state.name = org.apache.flink.runtime.state
+    # logger.state.level = DEBUG
+    # logger.rocksdbcontrib.name = org.apache.flink.contrib.streaming.state.restore
+    # logger.rocksdbcontrib.level = DEBUG
+    # logger.jobmaster.name = org.apache.flink.runtime.jobmaster.JobMaster
+    # logger.jobmaster.level = DEBUG
 
     # Log all infos to the console
     appender.console.name = ConsoleAppender

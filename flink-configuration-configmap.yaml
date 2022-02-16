@@ -20,19 +20,17 @@ data:
     restart-strategy.fixed-delay.attempts: 1024
     state.backend: rocksdb
     state.checkpoint-storage: filesystem
-    state.storage.fs.memory-threshold: 5kb
-    state.backend.local-recovery: true
     state.backend.persistent-volume-support: true
     state.backend.incremental: true
     state.checkpoints.dir: s3://flink/checkpoints
-    taskmanager.state.local.root-dirs: /pv/localState
-    # state.backend.rocksdb.localdir: /pv/rocksdb
     s3.path.style.access: true
     # minio settings
     env.java.opts: -Dcom.amazonaws.sdk.disableCertChecking
-    s3.endpoint: minio.default
+    s3.endpoint: minio
     s3.access-key: minio
     s3.secret-key: minio123
+    state.backend.local-recovery: true
+    process.taskmanager.working-dir: /pv
   log4j-console.properties: |+
     # This affects logging for both user code and Flink
     rootLogger.level = INFO

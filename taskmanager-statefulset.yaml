@@ -15,17 +15,20 @@ spec:
         app: flink
         component: taskmanager
     spec:
+      securityContext:
+        runAsUser: 9999
+        fsGroup: 9999
       containers:
       - name: taskmanager
-        image: flink:1.15-pv
+        image: flink:1.15
         env:
           - name: ENABLE_BUILT_IN_PLUGINS
             value: "flink-s3-fs-hadoop-1.15-SNAPSHOT.jar"
-          - name: POD_IP
+          - name: POD_NAME
             valueFrom:
               fieldRef:
-                fieldPath: status.podIP
-        args: ["taskmanager", "-Dtaskmanager.resource-id=$(POD_IP)"]
+                fieldPath: metadata.name
+        args: ["taskmanager", "-Dtaskmanager.resource-id=$(POD_NAME)"]
         ports:
         - containerPort: 6122
           name: rpc
@@ -38,13 +41,11 @@ spec:
             port: 6122
           initialDelaySeconds: 30
           periodSeconds: 60
-        # securityContext:
-        #   runAsUser: 9999  # refers to user _flink_ from official flink image, change if necessary
         volumeMounts:
         - name: flink-config-volume
           mountPath: /opt/flink/conf/
-        - name: ha-storage
-          mountPath: /ha-storage
+        # - name: ha-storage
+        #   mountPath: /ha-storage
         - name: pv
           mountPath: /pv
       serviceAccountName: flink-service-account # Service account which has the permissions to create, edit, delete ConfigMaps
@@ -57,9 +58,9 @@ spec:
             path: flink-conf.yaml
           - key: log4j-console.properties
             path: log4j-console.properties
-      - name: ha-storage
-        hostPath:
-          path: /home/docker/flink
+      # - name: ha-storage
+      #   hostPath:
+      #     path: /home/docker/flink
   volumeClaimTemplates:
   - metadata:
       name: pv
